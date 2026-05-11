@@ -48,6 +48,13 @@ import SavedAddressScreen from '../user/SavedAddressScreen';
 import SettingsScreen from '../user/SettingsScreen';
 import NotificationScreen from '../user/NotificationScreen';
 
+/* Cook*/
+import  CookHomeScreen from '../cook/CookHomeScreen';
+import  CookMenuScreen from '../cook/CookMenuScreen';
+import CookOrdersScreen from '../cook/CookOrdersScreen';
+import CookProfileScreen from '../cook/CookProfileScreen';
+import CookEarningsScreen from '../cook/CookEarningsScreen';
+
 /* CONTEXT */
 import {
   CartProvider,
@@ -249,11 +256,33 @@ export default function AppNavigator() {
         />
 
 
-          {/* COOK HOME */ }
+          {/* COOK MODULE */}
           <Stack.Screen
-            name="CookHome"
-            component={CookHome}
+           name="CookHome"
+           component={CookHomeScreen}
+           options={{ headerShown: false }}
           />
+          <Stack.Screen
+           name="CookMenu"
+           component={CookMenuScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CookOrders"
+            component={CookOrdersScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="CookProfile"
+           component={CookProfileScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="CookEarnings"
+           component={CookEarningsScreen}
+           options={{ headerShown: false }}
+          />
+
 
           {/* DELIVERY HOME */}
           <Stack.Screen
