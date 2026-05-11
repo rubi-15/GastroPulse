@@ -1,4 +1,9 @@
+// ======================================================
+// FILE: source/user/UserSignupScreen.js
+// ======================================================
+
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -6,14 +11,85 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function UserSignupScreen({ navigation }) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
+import { Picker } from "@react-native-picker/picker";
+
+import { Ionicons } from "@expo/vector-icons";
+
+export default function UserSignupScreen({
+  navigation,
+}) {
+
+  // =========================================
+  // USER DETAILS
+  // =========================================
+
+  const [username, setUsername] =
+    useState("");
+
+  const [name, setName] =
+    useState("");
+
+  const [email, setEmail] =
+    useState("");
+
+  const [phone, setPhone] =
+    useState("");
+
+  const [age, setAge] =
+    useState("");
+
+  const [height, setHeight] =
+    useState("");
+
+  const [weight, setWeight] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [
+    confirmPassword,
+    setConfirmPassword,
+  ] = useState("");
+
+  // =========================================
+  // PASSWORD VISIBILITY
+  // =========================================
+
+  const [showPassword, setShowPassword] =
     useState(false);
+
+  const [
+    showConfirmPassword,
+    setShowConfirmPassword,
+  ] = useState(false);
+
+  // =========================================
+  // HEALTH DETAILS
+  // =========================================
+
+  const [
+    activityLevel,
+    setActivityLevel,
+  ] = useState("Moderate");
+
+  const [
+    workoutType,
+    setWorkoutType,
+  ] = useState("Gym");
+
+  // =========================================
+  // FOOD PREFERENCES
+  // =========================================
+
+  const [selectedPreferences,
+    setSelectedPreferences] =
+    useState([]);
 
   const preferences = [
     "Vegetarian",
@@ -26,43 +102,189 @@ export default function UserSignupScreen({ navigation }) {
     "Spicy",
   ];
 
+  // =========================================
+  // TOGGLE FOOD PREFERENCE
+  // =========================================
+
+  const togglePreference = (
+    item
+  ) => {
+
+    if (
+      selectedPreferences.includes(item)
+    ) {
+
+      setSelectedPreferences(
+        selectedPreferences.filter(
+          (pref) => pref !== item
+        )
+      );
+
+    } else {
+
+      setSelectedPreferences([
+        ...selectedPreferences,
+        item,
+      ]);
+
+    }
+  };
+
+  // =========================================
+  // SIGNUP
+  // =========================================
+
+  const handleSignup = () => {
+
+    // VALIDATION
+
+    if (
+      !username ||
+      !name ||
+      !email ||
+      !phone ||
+      !age ||
+      !height ||
+      !weight ||
+      !password ||
+      !confirmPassword
+    ) {
+
+      Alert.alert(
+        "Validation Error",
+        "Please fill all fields"
+      );
+
+      return;
+    }
+
+    // PASSWORD CHECK
+
+    if (
+      password !== confirmPassword
+    ) {
+
+      Alert.alert(
+        "Password Error",
+        "Passwords do not match"
+      );
+
+      return;
+    }
+
+    // SUCCESS
+
+    Alert.alert(
+      "Registration Successful",
+      `Welcome ${name} 👋`,
+      [
+        {
+          text: "Continue",
+
+          onPress: () =>
+
+            navigation.replace(
+              "UserHome",
+              {
+                userName:
+                  username || name,
+
+                email,
+
+                preferences:
+                  selectedPreferences,
+
+                workoutType,
+
+                activityLevel,
+              }
+            ),
+        },
+      ]
+    );
+  };
+
   return (
+
     <SafeAreaView style={styles.container}>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 40,
         }}
       >
-        {/* Header */}
+
+        {/* HEADER */}
+
         <View style={styles.header}>
+
+          <TouchableOpacity
+            onPress={() =>
+              navigation.goBack()
+            }
+          >
+
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color="#111"
+            />
+
+          </TouchableOpacity>
+
           <Text style={styles.title}>
             User Registration
           </Text>
 
           <Text style={styles.subtitle}>
-            Profile setup — step 1 of 1
+            Create your healthy meal profile
           </Text>
+
         </View>
 
-        {/* Name */}
-        <Text style={styles.label}>Name</Text>
+        {/* USERNAME */}
+
+        <Text style={styles.label}>
+          Username
+        </Text>
+
+        <TextInput
+          placeholder="Enter username"
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+        />
+
+        {/* NAME */}
+
+        <Text style={styles.label}>
+          Full Name
+        </Text>
 
         <TextInput
           placeholder="Your full name"
           style={styles.input}
+          value={name}
+          onChangeText={setName}
         />
 
-        {/* Email */}
-        <Text style={styles.label}>Email</Text>
+        {/* EMAIL */}
+
+        <Text style={styles.label}>
+          Email
+        </Text>
 
         <TextInput
           placeholder="Enter your email"
           keyboardType="email-address"
           style={styles.input}
+          value={email}
+          onChangeText={setEmail}
         />
 
-        {/* Phone */}
+        {/* PHONE */}
+
         <Text style={styles.label}>
           Phone Number
         </Text>
@@ -71,70 +293,104 @@ export default function UserSignupScreen({ navigation }) {
           placeholder="Enter your phone number"
           keyboardType="phone-pad"
           style={styles.input}
+          value={phone}
+          onChangeText={setPhone}
         />
 
-        {/* Age */}
-        <Text style={styles.label}>Age</Text>
+        {/* AGE */}
+
+        <Text style={styles.label}>
+          Age
+        </Text>
 
         <TextInput
-          placeholder="Your age in years"
+          placeholder="Your age"
           keyboardType="numeric"
           style={styles.input}
+          value={age}
+          onChangeText={setAge}
         />
 
-        {/* Height */}
+        {/* HEIGHT */}
+
         <Text style={styles.label}>
           Height (cm)
         </Text>
 
         <TextInput
-          placeholder="Your height in centimeters"
+          placeholder="Your height"
           keyboardType="numeric"
           style={styles.input}
+          value={height}
+          onChangeText={setHeight}
         />
 
-        {/* Weight */}
+        {/* WEIGHT */}
+
         <Text style={styles.label}>
           Weight (kg)
         </Text>
 
         <TextInput
-          placeholder="Your weight in kilograms"
+          placeholder="Your weight"
           keyboardType="numeric"
           style={styles.input}
+          value={weight}
+          onChangeText={setWeight}
         />
 
-        {/* Password */}
-        <Text style={styles.label}>Password</Text>
+        {/* PASSWORD */}
+
+        <Text style={styles.label}>
+          Password
+        </Text>
 
         <View style={styles.passwordContainer}>
+
           <TextInput
             placeholder="Enter password"
             secureTextEntry={!showPassword}
             style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
           />
 
           <TouchableOpacity
             onPress={() =>
-              setShowPassword(!showPassword)
+              setShowPassword(
+                !showPassword
+              )
             }
           >
+
             <Text style={styles.showText}>
-              {showPassword ? "Hide" : "Show"}
+              {showPassword
+                ? "Hide"
+                : "Show"}
             </Text>
+
           </TouchableOpacity>
+
         </View>
 
-        {/* Confirm Password */}
+        {/* CONFIRM PASSWORD */}
+
         <Text style={styles.label}>
           Confirm Password
         </Text>
 
         <View style={styles.passwordContainer}>
+
           <TextInput
             placeholder="Confirm password"
-            secureTextEntry={!showConfirmPassword}
+            secureTextEntry={
+              !showConfirmPassword
+            }
             style={styles.passwordInput}
+            value={confirmPassword}
+            onChangeText={
+              setConfirmPassword
+            }
           />
 
           <TouchableOpacity
@@ -144,71 +400,164 @@ export default function UserSignupScreen({ navigation }) {
               )
             }
           >
+
             <Text style={styles.showText}>
               {showConfirmPassword
                 ? "Hide"
                 : "Show"}
             </Text>
+
           </TouchableOpacity>
+
         </View>
 
-        {/* Activity */}
+        {/* ACTIVITY LEVEL */}
+
         <Text style={styles.label}>
           Daily Activity Level
         </Text>
 
-        <TouchableOpacity style={styles.dropdown}>
-          <Text style={styles.dropdownText}>
-            Select your activity level
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.dropdownContainer}>
 
-        {/* Workout */}
+          <Picker
+            selectedValue={activityLevel}
+            onValueChange={(itemValue) =>
+              setActivityLevel(
+                itemValue
+              )
+            }
+          >
+
+            <Picker.Item
+              label="Low Activity"
+              value="Low Activity"
+            />
+
+            <Picker.Item
+              label="Moderate"
+              value="Moderate"
+            />
+
+            <Picker.Item
+              label="High Activity"
+              value="High Activity"
+            />
+
+          </Picker>
+
+        </View>
+
+        {/* WORKOUT */}
+
         <Text style={styles.label}>
           Workout Type
         </Text>
 
-        <TouchableOpacity style={styles.dropdown}>
-          <Text style={styles.dropdownText}>
-            Select your primary workout type
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.dropdownContainer}>
 
-        {/* Preferences */}
+          <Picker
+            selectedValue={workoutType}
+            onValueChange={(itemValue) =>
+              setWorkoutType(
+                itemValue
+              )
+            }
+          >
+
+            <Picker.Item
+              label="Gym"
+              value="Gym"
+            />
+
+            <Picker.Item
+              label="Yoga"
+              value="Yoga"
+            />
+
+            <Picker.Item
+              label="Running"
+              value="Running"
+            />
+
+            <Picker.Item
+              label="Home Workout"
+              value="Home Workout"
+            />
+
+          </Picker>
+
+        </View>
+
+        {/* FOOD PREFERENCES */}
+
         <Text style={styles.label}>
           Food Preferences
         </Text>
 
         <View style={styles.preferenceContainer}>
-          {preferences.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.preferenceButton}
-            >
-              <Text style={styles.preferenceText}>
-                {item}
-              </Text>
-            </TouchableOpacity>
-          ))}
+
+          {preferences.map(
+            (item, index) => {
+
+              const isSelected =
+                selectedPreferences.includes(
+                  item
+                );
+
+              return (
+
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.preferenceButton,
+
+                    isSelected &&
+                      styles.selectedPreference,
+                  ]}
+                  onPress={() =>
+                    togglePreference(item)
+                  }
+                >
+
+                  <Text
+                    style={[
+                      styles.preferenceText,
+
+                      isSelected &&
+                        styles.selectedPreferenceText,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+
+                </TouchableOpacity>
+              );
+            }
+          )}
+
         </View>
 
-        {/* Save Button */}
+        {/* SUBMIT */}
+
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={() =>
-            navigation.navigate("Login")
-          }
+          onPress={handleSignup}
         >
+
           <Text style={styles.saveButtonText}>
-            Save & Go to Login
+            Create Account
           </Text>
+
         </TouchableOpacity>
+
       </ScrollView>
+
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: "#F6F6F6",
@@ -221,9 +570,10 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "700",
     color: "#111",
+    marginTop: 15,
     marginBottom: 8,
   },
 
@@ -233,7 +583,7 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     marginBottom: 8,
     color: "#333",
@@ -244,7 +594,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 18,
     borderWidth: 1,
     borderColor: "#E0E0E0",
@@ -265,7 +615,7 @@ const styles = StyleSheet.create({
   passwordInput: {
     flex: 1,
     paddingVertical: 16,
-    fontSize: 16,
+    fontSize: 15,
   },
 
   showText: {
@@ -273,19 +623,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  dropdown: {
+  dropdownContainer: {
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
-    marginBottom: 18,
     borderWidth: 1,
     borderColor: "#E0E0E0",
-  },
-
-  dropdownText: {
-    color: "#777",
-    fontSize: 16,
+    marginBottom: 18,
+    overflow: "hidden",
   },
 
   preferenceContainer: {
@@ -303,10 +647,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
+  selectedPreference: {
+    backgroundColor: "#23B6A6",
+  },
+
   preferenceText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#333",
+  },
+
+  selectedPreferenceText: {
+    color: "#FFFFFF",
   },
 
   saveButton: {
@@ -322,4 +674,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
   },
+
 });
