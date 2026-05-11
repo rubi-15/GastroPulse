@@ -1,4 +1,9 @@
+// ======================================================
+// FILE: source/delivery/DeliveryPartnerRegister.js
+// ======================================================
+
 import React, { useState } from 'react';
+
 import {
   View,
   Text,
@@ -10,21 +15,46 @@ import {
 } from 'react-native';
 
 import { Picker } from '@react-native-picker/picker';
+
 import * as DocumentPicker from 'expo-document-picker';
+
 import { Ionicons } from '@expo/vector-icons';
 
-export default function DeliveryPartnerRegister() {
-  // -----------------------------------
-  // Personal Details
-  // -----------------------------------
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
+export default function DeliveryPartnerRegister({
+  navigation,
+}) {
 
-  // -----------------------------------
-  // Vehicle Details
-  // -----------------------------------
+  // ============================================
+  // ACCOUNT DETAILS
+  // ============================================
+
+  const [username, setUsername] =
+    useState('');
+
+  const [fullName, setFullName] =
+    useState('');
+
+  const [phone, setPhone] =
+    useState('');
+
+  const [email, setEmail] =
+    useState('');
+
+  const [password, setPassword] =
+    useState('');
+
+  const [
+    confirmPassword,
+    setConfirmPassword,
+  ] = useState('');
+
+  const [address, setAddress] =
+    useState('');
+
+  // ============================================
+  // VEHICLE DETAILS
+  // ============================================
+
   const [vehicleType, setVehicleType] =
     useState('Bike');
 
@@ -43,13 +73,15 @@ export default function DeliveryPartnerRegister() {
   const [availableDays, setAvailableDays] =
     useState('');
 
-  // -----------------------------------
-  // Documents
-  // -----------------------------------
+  // ============================================
+  // DOCUMENTS
+  // ============================================
+
   const [licenseProof, setLicenseProof] =
     useState('');
 
-  const [idProof, setIdProof] = useState('');
+  const [idProof, setIdProof] =
+    useState('');
 
   const [vehicleProof, setVehicleProof] =
     useState('');
@@ -60,21 +92,27 @@ export default function DeliveryPartnerRegister() {
   const [startupProof, setStartupProof] =
     useState('');
 
-  // -----------------------------------
-  // Extra
-  // -----------------------------------
+  // ============================================
+  // CHECKBOX
+  // ============================================
+
   const [helmetChecked, setHelmetChecked] =
     useState(false);
 
   const [termsAccepted, setTermsAccepted] =
     useState(false);
 
-  // -----------------------------------
-  // Upload Functions
-  // -----------------------------------
+  // ============================================
+  // DOCUMENT PICKERS
+  // ============================================
 
-  const uploadLicense = async () => {
+  const pickFile = async (
+    setFunction,
+    errorMessage
+  ) => {
+
     try {
+
       const result =
         await DocumentPicker.getDocumentAsync({
           type: '*/*',
@@ -82,100 +120,38 @@ export default function DeliveryPartnerRegister() {
         });
 
       if (!result.canceled) {
-        setLicenseProof(result.assets[0].name);
+
+        setFunction(
+          result.assets[0].name
+        );
+
       }
+
     } catch (error) {
+
       Alert.alert(
-        'Error',
-        'Unable to upload license'
+        'Upload Error',
+        errorMessage
       );
+
     }
   };
 
-  const uploadIdProof = async () => {
-    try {
-      const result =
-        await DocumentPicker.getDocumentAsync({
-          type: '*/*',
-          copyToCacheDirectory: true,
-        });
+  // ============================================
+  // SUBMIT
+  // ============================================
 
-      if (!result.canceled) {
-        setIdProof(result.assets[0].name);
-      }
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        'Unable to upload ID proof'
-      );
-    }
-  };
-
-  const uploadVehicleProof = async () => {
-    try {
-      const result =
-        await DocumentPicker.getDocumentAsync({
-          type: '*/*',
-          copyToCacheDirectory: true,
-        });
-
-      if (!result.canceled) {
-        setVehicleProof(result.assets[0].name);
-      }
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        'Unable to upload RC proof'
-      );
-    }
-  };
-
-  const uploadVehicleImage = async () => {
-    try {
-      const result =
-        await DocumentPicker.getDocumentAsync({
-          type: 'image/*',
-          copyToCacheDirectory: true,
-        });
-
-      if (!result.canceled) {
-        setVehicleImage(result.assets[0].name);
-      }
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        'Unable to upload vehicle image'
-      );
-    }
-  };
-
-  const uploadStartupProof = async () => {
-    try {
-      const result =
-        await DocumentPicker.getDocumentAsync({
-          type: '*/*',
-          copyToCacheDirectory: true,
-        });
-
-      if (!result.canceled) {
-        setStartupProof(result.assets[0].name);
-      }
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        'Unable to upload StartupTN proof'
-      );
-    }
-  };
-
-  // -----------------------------------
-  // Submit
-  // -----------------------------------
   const handleSubmit = () => {
+
+    // VALIDATION
+
     if (
+      !username ||
       !fullName ||
       !phone ||
       !email ||
+      !password ||
+      !confirmPassword ||
       !address ||
       !vehicleNumber ||
       !deliveryTime ||
@@ -183,67 +159,148 @@ export default function DeliveryPartnerRegister() {
       !deliveryArea ||
       !availableDays
     ) {
+
       Alert.alert(
-        'Validation',
+        'Validation Error',
         'Please fill all required fields'
       );
+
       return;
     }
 
-    if (!helmetChecked || !termsAccepted) {
+    // PASSWORD CHECK
+
+    if (password !== confirmPassword) {
+
+      Alert.alert(
+        'Password Error',
+        'Passwords do not match'
+      );
+
+      return;
+    }
+
+    // DOCUMENT CHECK
+
+    if (
+      !licenseProof ||
+      !idProof ||
+      !vehicleProof
+    ) {
+
+      Alert.alert(
+        'Document Required',
+        'Please upload all required documents'
+      );
+
+      return;
+    }
+
+    // CHECKBOX CHECK
+
+    if (
+      !helmetChecked ||
+      !termsAccepted
+    ) {
+
       Alert.alert(
         'Confirmation Required',
         'Please accept all declarations'
       );
+
       return;
     }
 
-    Alert.alert(
-      'Success',
-      'Delivery Partner Registered Successfully'
-    );
+    // SUCCESS
 
-    console.log({
-      fullName,
-      phone,
-      email,
-      address,
-      vehicleType,
-      vehicleNumber,
-      deliveryTime,
-      experience,
-      deliveryArea,
-      availableDays,
-      licenseProof,
-      idProof,
-      vehicleProof,
-      vehicleImage,
-      startupProof,
-    });
+    Alert.alert(
+      'Registration Successful',
+      'Welcome to GastroPulse Delivery Team',
+      [
+        {
+          text: 'Continue',
+
+          onPress: () =>
+
+            navigation.replace(
+              'DeliveryHome',
+              {
+                driverName:
+                  username || fullName,
+
+                email,
+
+                vehicleType,
+
+                deliveryArea,
+              }
+            ),
+        },
+      ]
+    );
   };
 
+  // ============================================
+  // UI
+  // ============================================
+
   return (
+
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header */}
+
+      {/* HEADER */}
+
       <View style={styles.headerContainer}>
-        
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.goBack()
+          }
+        >
+
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color="#222"
+          />
+
+        </TouchableOpacity>
 
         <Text style={styles.headerTitle}>
           Delivery Partner Registration
         </Text>
+
       </View>
 
       <View style={styles.formContainer}>
-        {/* Personal Details */}
+
+        {/* ============================================
+            ACCOUNT DETAILS
+        ============================================ */}
+
         <View style={styles.card}>
+
           <Text style={styles.sectionTitle}>
-            Personal Details
+            Account Information
           </Text>
 
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>
+            Username
+          </Text>
+
+          <TextInput
+            placeholder="Enter username"
+            style={styles.input}
+            value={username}
+            onChangeText={setUsername}
+          />
+
+          <Text style={styles.label}>
+            Full Name
+          </Text>
 
           <TextInput
             placeholder="John Doe"
@@ -264,7 +321,9 @@ export default function DeliveryPartnerRegister() {
             onChangeText={setPhone}
           />
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>
+            Email Address
+          </Text>
 
           <TextInput
             placeholder="your@email.com"
@@ -274,7 +333,35 @@ export default function DeliveryPartnerRegister() {
             onChangeText={setEmail}
           />
 
-          <Text style={styles.label}>Address</Text>
+          <Text style={styles.label}>
+            Password
+          </Text>
+
+          <TextInput
+            placeholder="Create password"
+            secureTextEntry
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <Text style={styles.label}>
+            Confirm Password
+          </Text>
+
+          <TextInput
+            placeholder="Confirm password"
+            secureTextEntry
+            style={styles.input}
+            value={confirmPassword}
+            onChangeText={
+              setConfirmPassword
+            }
+          />
+
+          <Text style={styles.label}>
+            Address
+          </Text>
 
           <TextInput
             placeholder="Street, City, Area"
@@ -282,10 +369,15 @@ export default function DeliveryPartnerRegister() {
             value={address}
             onChangeText={setAddress}
           />
+
         </View>
 
-        {/* Vehicle Details */}
+        {/* ============================================
+            VEHICLE DETAILS
+        ============================================ */}
+
         <View style={styles.card}>
+
           <Text style={styles.sectionTitle}>
             Vehicle Information
           </Text>
@@ -295,12 +387,14 @@ export default function DeliveryPartnerRegister() {
           </Text>
 
           <View style={styles.pickerContainer}>
+
             <Picker
               selectedValue={vehicleType}
               onValueChange={(itemValue) =>
                 setVehicleType(itemValue)
               }
             >
+
               <Picker.Item
                 label="Bike"
                 value="Bike"
@@ -320,7 +414,9 @@ export default function DeliveryPartnerRegister() {
                 label="Electric Vehicle"
                 value="Electric Vehicle"
               />
+
             </Picker>
+
           </View>
 
           <Text style={styles.label}>
@@ -339,7 +435,7 @@ export default function DeliveryPartnerRegister() {
           </Text>
 
           <TextInput
-            placeholder="Example: 9 AM - 10 PM"
+            placeholder="9 AM - 10 PM"
             style={styles.input}
             value={deliveryTime}
             onChangeText={setDeliveryTime}
@@ -350,7 +446,7 @@ export default function DeliveryPartnerRegister() {
           </Text>
 
           <TextInput
-            placeholder="Example: 2 Years"
+            placeholder="2 Years"
             style={styles.input}
             value={experience}
             onChangeText={setExperience}
@@ -368,7 +464,7 @@ export default function DeliveryPartnerRegister() {
           />
 
           <Text style={styles.label}>
-            Available Working Days
+            Working Days
           </Text>
 
           <TextInput
@@ -377,23 +473,35 @@ export default function DeliveryPartnerRegister() {
             value={availableDays}
             onChangeText={setAvailableDays}
           />
+
         </View>
 
-        {/* Document Uploads */}
+        {/* ============================================
+            DOCUMENTS
+        ============================================ */}
+
         <View style={styles.card}>
+
           <Text style={styles.sectionTitle}>
-            Document Uploads
+            Upload Documents
           </Text>
 
-          {/* License Upload */}
+          {/* LICENSE */}
+
           <Text style={styles.label}>
-            Driving License Upload
+            Driving License
           </Text>
 
           <TouchableOpacity
             style={styles.uploadButton}
-            onPress={uploadLicense}
+            onPress={() =>
+              pickFile(
+                setLicenseProof,
+                'Unable to upload license'
+              )
+            }
           >
+
             <Ionicons
               name="cloud-upload-outline"
               size={20}
@@ -405,17 +513,25 @@ export default function DeliveryPartnerRegister() {
                 ? licenseProof
                 : 'Upload License'}
             </Text>
+
           </TouchableOpacity>
 
-          {/* ID Upload */}
+          {/* ID */}
+
           <Text style={styles.label}>
             Government ID Proof
           </Text>
 
           <TouchableOpacity
             style={styles.uploadButton}
-            onPress={uploadIdProof}
+            onPress={() =>
+              pickFile(
+                setIdProof,
+                'Unable to upload ID proof'
+              )
+            }
           >
+
             <Ionicons
               name="document-outline"
               size={20}
@@ -427,17 +543,25 @@ export default function DeliveryPartnerRegister() {
                 ? idProof
                 : 'Upload ID Proof'}
             </Text>
+
           </TouchableOpacity>
 
-          {/* RC Upload */}
+          {/* RC */}
+
           <Text style={styles.label}>
             Vehicle Registration Proof
           </Text>
 
           <TouchableOpacity
             style={styles.uploadButton}
-            onPress={uploadVehicleProof}
+            onPress={() =>
+              pickFile(
+                setVehicleProof,
+                'Unable to upload RC Book'
+              )
+            }
           >
+
             <Ionicons
               name="car-outline"
               size={20}
@@ -449,17 +573,25 @@ export default function DeliveryPartnerRegister() {
                 ? vehicleProof
                 : 'Upload RC Book'}
             </Text>
+
           </TouchableOpacity>
 
-          {/* Vehicle Image */}
+          {/* VEHICLE IMAGE */}
+
           <Text style={styles.label}>
-            Vehicle Image Upload
+            Vehicle Image
           </Text>
 
           <TouchableOpacity
             style={styles.uploadButton}
-            onPress={uploadVehicleImage}
+            onPress={() =>
+              pickFile(
+                setVehicleImage,
+                'Unable to upload vehicle image'
+              )
+            }
           >
+
             <Ionicons
               name="camera-outline"
               size={20}
@@ -471,17 +603,25 @@ export default function DeliveryPartnerRegister() {
                 ? vehicleImage
                 : 'Upload Vehicle Image'}
             </Text>
+
           </TouchableOpacity>
 
-          {/* StartupTN */}
+          {/* STARTUP */}
+
           <Text style={styles.label}>
             StartupTN Proof
           </Text>
 
           <TouchableOpacity
             style={styles.uploadButton}
-            onPress={uploadStartupProof}
+            onPress={() =>
+              pickFile(
+                setStartupProof,
+                'Unable to upload StartupTN proof'
+              )
+            }
           >
+
             <Ionicons
               name="business-outline"
               size={20}
@@ -493,16 +633,24 @@ export default function DeliveryPartnerRegister() {
                 ? startupProof
                 : 'Upload StartupTN Proof'}
             </Text>
+
           </TouchableOpacity>
+
         </View>
 
-        {/* Safety Declaration */}
+        {/* ============================================
+            DECLARATION
+        ============================================ */}
+
         <TouchableOpacity
           style={styles.checkboxContainer}
           onPress={() =>
-            setHelmetChecked(!helmetChecked)
+            setHelmetChecked(
+              !helmetChecked
+            )
           }
         >
+
           <Ionicons
             name={
               helmetChecked
@@ -514,19 +662,21 @@ export default function DeliveryPartnerRegister() {
           />
 
           <Text style={styles.checkboxText}>
-            I confirm that I always follow
-            traffic rules and wear safety gear
-            during delivery.
+            I follow traffic rules and wear
+            safety gear during delivery.
           </Text>
+
         </TouchableOpacity>
 
-        {/* Terms */}
         <TouchableOpacity
           style={styles.checkboxContainer}
           onPress={() =>
-            setTermsAccepted(!termsAccepted)
+            setTermsAccepted(
+              !termsAccepted
+            )
           }
         >
+
           <Ionicons
             name={
               termsAccepted
@@ -542,33 +692,42 @@ export default function DeliveryPartnerRegister() {
             policies and customer safety
             guidelines.
           </Text>
+
         </TouchableOpacity>
 
-        {/* Info Box */}
+        {/* INFO BOX */}
+
         <View style={styles.infoBox}>
+
           <Text style={styles.infoText}>
-            All uploaded documents are securely
-            encrypted and used only for
-            verification and operational
-            purposes.
+            All uploaded documents are
+            securely encrypted and used only
+            for verification purposes.
           </Text>
+
         </View>
 
-        {/* Submit */}
+        {/* SUBMIT */}
+
         <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit}
         >
+
           <Text style={styles.submitButtonText}>
             Submit & Open Dashboard
           </Text>
+
         </TouchableOpacity>
+
       </View>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#F6F6F6',
@@ -606,7 +765,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
     marginBottom: 10,
     color: '#222',
@@ -648,7 +807,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 6,
-    gap: 8,
     backgroundColor: '#FAFAFA',
   },
 
@@ -656,14 +814,13 @@ const styles = StyleSheet.create({
     color: '#16b39a',
     fontWeight: '700',
     fontSize: 13,
+    marginLeft: 8,
   },
 
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
     marginTop: 10,
-    marginBottom: 5,
   },
 
   checkboxText: {
@@ -671,6 +828,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
     color: '#555',
+    marginLeft: 10,
   },
 
   infoBox: {
@@ -700,4 +858,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+
 });
