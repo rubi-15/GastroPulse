@@ -55,7 +55,14 @@ import CookOrdersScreen from '../cook/CookOrdersScreen';
 import CookProfileScreen from '../cook/CookProfileScreen';
 import CookEarningsScreen from '../cook/CookEarningsScreen';
 
-/* CONTEXT */
+/* Delivery */
+import DeliveryHomeScreen from '../delivery/DeliveryHomeScreen';
+import DeliveryOrdersScreen from '../delivery/DeliveryOrdersScreen';
+import DeliveryTrackingScreen from '../delivery/DeliveryTrackingScreen';
+import DeliveryEarningsScreen from '../delivery/DeliveryEarningsScreen';
+import DeliveryProfileScreen from '../delivery/DeliveryProfileScreen';
+import DeliveryProfileScreen from '../delivery/DeliveryOrderStatusScreen';
+
 import {
   CartProvider,
 } from "../context/CartContext";
@@ -286,8 +293,34 @@ export default function AppNavigator() {
 
           {/* DELIVERY HOME */}
           <Stack.Screen
-            name="DeliveryHome"
-            component={DeliveryHome}
+           name="DeliveryHome"
+           component={DeliveryHomeScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="DeliveryOrders"
+           component={DeliveryOrdersScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="DeliveryTracking"
+           component={DeliveryTrackingScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="DeliveryEarnings"
+           component={DeliveryEarningsScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="DeliveryProfile"
+           component={DeliveryProfileScreen}
+           options={{ headerShown: false }}
+          />
+          <Stack.Screen
+           name="DeliveryOrderStatus"
+           component={DeliveryOrderStatusScreen}
+           options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
