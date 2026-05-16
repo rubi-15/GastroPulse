@@ -1,0 +1,601 @@
+// ======================================================
+// FILE: source/delivery/DeliveryOrderStatusScreen.js
+// REAL-TIME ORDER STATUS SCREEN
+// ======================================================
+
+import React, { useState } from 'react';
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons';
+
+export default function DeliveryOrderStatusScreen({
+  route,
+  navigation,
+}) {
+
+  const { order } = route.params;
+
+  // ======================================================
+  // LIVE STATUS STEPS
+  // ======================================================
+
+  const statusSteps = [
+
+    'Order Accepted',
+
+    'Picked Up',
+
+    'On The Way',
+
+    'Delivered',
+
+  ];
+
+  // ======================================================
+  // CURRENT STATUS INDEX
+  // ======================================================
+
+  const [currentStep, setCurrentStep] =
+    useState(
+      statusSteps.indexOf(
+        order.status
+      ) !== -1
+        ? statusSteps.indexOf(
+            order.status
+          )
+        : 0
+    );
+
+  // ======================================================
+  // UPDATE STATUS
+  // ======================================================
+
+  const nextStatus = () => {
+
+    if (
+      currentStep <
+      statusSteps.length - 1
+    ) {
+
+      setCurrentStep(
+        currentStep + 1
+      );
+
+    }
+
+  };
+
+  return (
+
+    <SafeAreaView
+      style={styles.container}
+    >
+
+      <ScrollView
+        showsVerticalScrollIndicator={
+          false
+        }
+      >
+
+        {/* ======================================================
+            HEADER
+        ====================================================== */}
+
+        <View style={styles.header}>
+
+          <TouchableOpacity
+            onPress={() =>
+              navigation.goBack()
+            }
+          >
+
+            <Ionicons
+              name="arrow-back"
+              size={28}
+              color="#222"
+            />
+
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>
+            Live Tracking
+          </Text>
+
+          <View style={{ width: 28 }} />
+
+        </View>
+
+        {/* ======================================================
+            ORDER CARD
+        ====================================================== */}
+
+        <View style={styles.card}>
+
+          <View style={styles.orderTop}>
+
+            <View>
+
+              <Text style={styles.orderId}>
+                {order.id}
+              </Text>
+
+              <Text
+                style={styles.restaurant}
+              >
+                {order.restaurant}
+              </Text>
+
+            </View>
+
+            <View
+              style={styles.liveBadge}
+            >
+
+              <Text
+                style={styles.liveText}
+              >
+                LIVE
+              </Text>
+
+            </View>
+
+          </View>
+
+          {/* CUSTOMER */}
+
+          <View style={styles.infoRow}>
+
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color="#16b39a"
+            />
+
+            <Text style={styles.infoText}>
+              {order.customer}
+            </Text>
+
+          </View>
+
+          {/* PICKUP */}
+
+          <View style={styles.infoRow}>
+
+            <Ionicons
+              name="restaurant-outline"
+              size={20}
+              color="#16b39a"
+            />
+
+            <Text style={styles.infoText}>
+              Pickup:
+              {' '}
+              {order.pickup}
+            </Text>
+
+          </View>
+
+          {/* DROP */}
+
+          <View style={styles.infoRow}>
+
+            <Ionicons
+              name="location-outline"
+              size={20}
+              color="#16b39a"
+            />
+
+            <Text style={styles.infoText}>
+              Drop:
+              {' '}
+              {order.drop}
+            </Text>
+
+          </View>
+
+          {/* PAYMENT */}
+
+          <View style={styles.infoRow}>
+
+            <Ionicons
+              name="wallet-outline"
+              size={20}
+              color="#16b39a"
+            />
+
+            <Text style={styles.infoText}>
+              {order.payment}
+            </Text>
+
+          </View>
+
+          {/* EARNINGS */}
+
+          <View style={styles.amountRow}>
+
+            <Text style={styles.amountLabel}>
+              Earnings
+            </Text>
+
+            <Text style={styles.amount}>
+              ₹{order.amount}
+            </Text>
+
+          </View>
+
+        </View>
+
+        {/* ======================================================
+            TRACKING STATUS
+        ====================================================== */}
+
+        <View style={styles.statusCard}>
+
+          <Text style={styles.statusTitle}>
+            Delivery Progress
+          </Text>
+
+          {statusSteps.map(
+            (step, index) => {
+
+              const completed =
+                index <= currentStep;
+
+              return (
+
+                <View
+                  key={index}
+                  style={styles.stepRow}
+                >
+
+                  {/* LINE */}
+
+                  {index !==
+                    statusSteps.length -
+                      1 && (
+
+                    <View
+                      style={[
+                        styles.verticalLine,
+
+                        {
+                          backgroundColor:
+                            completed
+                              ? '#16b39a'
+                              : '#ddd',
+                        },
+                      ]}
+                    />
+
+                  )}
+
+                  {/* CIRCLE */}
+
+                  <View
+                    style={[
+                      styles.circle,
+
+                      {
+                        backgroundColor:
+                          completed
+                            ? '#16b39a'
+                            : '#ddd',
+                      },
+                    ]}
+                  >
+
+                    {completed && (
+
+                      <Ionicons
+                        name="checkmark"
+                        size={14}
+                        color="#fff"
+                      />
+
+                    )}
+
+                  </View>
+
+                  {/* TEXT */}
+
+                  <View>
+
+                    <Text
+                      style={[
+                        styles.stepText,
+
+                        {
+                          color:
+                            completed
+                              ? '#222'
+                              : '#999',
+                        },
+                      ]}
+                    >
+                      {step}
+                    </Text>
+
+                    <Text
+                      style={
+                        styles.stepSub
+                      }
+                    >
+                      {completed
+                        ? 'Completed'
+                        : 'Pending'}
+                    </Text>
+
+                  </View>
+
+                </View>
+
+              );
+
+            }
+          )}
+
+        </View>
+
+        {/* ======================================================
+            ACTION BUTTON
+        ====================================================== */}
+
+        {currentStep !==
+          statusSteps.length - 1 && (
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={nextStatus}
+          >
+
+            <Ionicons
+              name="refresh-outline"
+              size={22}
+              color="#fff"
+            />
+
+            <Text
+              style={styles.buttonText}
+            >
+              Update Status
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
+
+        {/* ======================================================
+            DELIVERY COMPLETED
+        ====================================================== */}
+
+        {currentStep ===
+          statusSteps.length - 1 && (
+
+          <View
+            style={styles.completedCard}
+          >
+
+            <Ionicons
+              name="checkmark-circle"
+              size={65}
+              color="#16b39a"
+            />
+
+            <Text
+              style={
+                styles.completedTitle
+              }
+            >
+              Delivery Completed
+            </Text>
+
+            <Text
+              style={styles.completedText}
+            >
+              Order delivered successfully
+            </Text>
+
+          </View>
+
+        )}
+
+        <View style={{ height: 40 }} />
+
+      </ScrollView>
+
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 16,
+    paddingTop: 50,
+  },
+
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:
+      'space-between',
+    marginBottom: 25,
+  },
+
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#222',
+  },
+
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 26,
+    padding: 22,
+    marginBottom: 22,
+  },
+
+  orderTop: {
+    flexDirection: 'row',
+    justifyContent:
+      'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  orderId: {
+    color: '#16b39a',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+
+  restaurant: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#222',
+    marginTop: 6,
+  },
+
+  liveBadge: {
+    backgroundColor: '#16b39a',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+
+  liveText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+
+  infoText: {
+    marginLeft: 10,
+    color: '#555',
+    fontSize: 15,
+    flex: 1,
+  },
+
+  amountRow: {
+    flexDirection: 'row',
+    justifyContent:
+      'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+
+  amountLabel: {
+    color: '#777',
+    fontSize: 16,
+  },
+
+  amount: {
+    color: '#16b39a',
+    fontSize: 28,
+    fontWeight: '700',
+  },
+
+  statusCard: {
+    backgroundColor: '#fff',
+    borderRadius: 26,
+    padding: 24,
+  },
+
+  statusTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#222',
+    marginBottom: 30,
+  },
+
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 30,
+    position: 'relative',
+  },
+
+  verticalLine: {
+    position: 'absolute',
+    left: 11,
+    top: 24,
+    width: 3,
+    height: 55,
+    borderRadius: 5,
+  },
+
+  circle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    zIndex: 10,
+  },
+
+  stepText: {
+    fontSize: 17,
+    fontWeight: '700',
+  },
+
+  stepSub: {
+    color: '#777',
+    marginTop: 4,
+  },
+
+  button: {
+    backgroundColor: '#16b39a',
+    height: 58,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 25,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+
+  completedCard: {
+    backgroundColor: '#fff',
+    borderRadius: 26,
+    padding: 35,
+    alignItems: 'center',
+    marginTop: 25,
+  },
+
+  completedTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#222',
+    marginTop: 15,
+  },
+
+  completedText: {
+    color: '#666',
+    marginTop: 8,
+    fontSize: 15,
+  },
+
+});
